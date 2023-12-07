@@ -1,8 +1,7 @@
 // const puppeteer = require('puppeteer');
 // const MAX_VOTES = 100000000;
 
-var http = require('http');
-var querystring = require('querystring');
+const axios = require('axios');
 
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
@@ -54,38 +53,23 @@ const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 // })();
 
 function sendRequest() {
-  var postData = querystring.stringify({
+  const url = 'https://isango.igihe.com/premium2.php';
+  const payload = new URLSearchParams({
       'nominee': '20231142',
       'catgr': '9-32'
   });
 
-  var options = {
-      hostname: 'isango.igihe.com',
-      path: '/premium2.php',
-      method: 'POST',
+  axios.post(url, payload, {
       headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': Buffer.byteLength(postData)
+          'Content-Type': 'application/x-www-form-urlencoded'
       }
-  };
-
-  var req = http.request(options, (res) => {
-      res.setEncoding('utf8');
-      res.on('data', (chunk) => {
-          console.log(`BODY: ${chunk}`);
-      });
-      res.on('end', () => {
-          console.log('No more data in response.');
-      });
+  })
+  .then(response => {
+      console.log(response.data);
+  })
+  .catch(error => {
+      console.error('Error:', error);
   });
-
-  req.on('error', (e) => {
-      console.error(`problem with request: ${e.message}`);
-  });
-
-  // write data to request body
-  req.write(postData);
-  req.end();
 }
 
 (async () => {
@@ -94,7 +78,7 @@ function sendRequest() {
     sendRequest();
     count++;
     console.log('count', count);
-    await delay(20000);
+    await delay(40000);
   }
 })();
 
